@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", async (req, res) => {
-	req.status(200).send({
+	res.status(200).send({
 		message: "Hello from the AI World!",
 	});
 });
@@ -35,13 +35,13 @@ app.post("/", async (req, res) => {
 			presence_penalty: 0,
 		});
 
-		req.status(200).send({
+		res.status(200).send({
 			bot: response.data.choices[0].text,
 		});
 	} catch (error) {
 		console.error(error);
 
-		req.status(500).send({
+		res.status(500).send({
 			error,
 		});
 	}
