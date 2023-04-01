@@ -10,9 +10,9 @@ function loader(element) {
   element.textContent = "";
 
   loadInterval = setInterval(() =>{
-    document.textContent += ".";
+    element.textContent += ".";
 
-    if(element.textContent === "....") {
+    if (element.textContent === "....") {
       element.textContent = "";
     }
   }, 300);
@@ -39,10 +39,10 @@ function generateUniqueId() {
   return `id-${timestamp}-${hexadecimalNumber}`;
 }
 
-function chatStripe(isAi, value, uniqueId) {
+function chatStripe(isAi, value, uniqueId = "") {
   return (
     `
-      <div class="wrapper ${isAi && "ai"}">
+      <div class="wrapper ${isAi ? "ai" : ""}">
         <div class="chat">
           <div class="profile">
             <img 
@@ -50,11 +50,37 @@ function chatStripe(isAi, value, uniqueId) {
               alt="${isAi ? "Bot" : "User"}" 
             />
           </div>
-          <div class="message" id="${uniqueId}">
-            ${value}
-          </div>
+          <div class="message" id="${uniqueId}">${value}</div>
         </div>
       </div>
     `
   );
 }
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const data = new FormData(form);
+
+  // User Chat Stripe
+  chatContainer.innerHTML += chatStripe(false, data.get("prompt"));
+
+  form.reset();  
+
+  // Bot Chat Stripe
+  const uniqueId = generateUniqueId();
+  chatContainer.innerHTML += chatStripe(true, " ", uniqueId);
+
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+
+  const messageDiv = document.getElementById(uniqueId);
+
+  loader(messageDiv);
+}
+
+form.addEventListener("submit", handleSubmit);
+form.addEventListener("keyup", (e) => {
+  if(e.keyCode === 13) {
+    handleSubmit(e);
+  }
+});
