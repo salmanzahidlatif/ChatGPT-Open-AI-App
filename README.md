@@ -3,10 +3,10 @@ Simple ChatGPT Open AI based app, that can take input from user as a chatting bo
 
 It uses VITE for development & bundling. 
 
-Github actions for CI/CD has also setup for the deployment on firebase.
+Vercel CI/CD has also setup for the deployment on vercel server.
 
-You can visit https://whatsapp-clone-s7r.web.app/ to DEMO the app.
-Backend is hosted on Vercel at: https://chat-gpt-open-ai-app.vercel.app/
+You can visit [here](https://chat-gpt-open-ai-chat-bot.vercel.app/) to DEMO the app.
+Backend is hosted on Vercel, you can visit [here](https://chat-gpt-open-ai-app.vercel.app/)
 
 Just start typing and bot will start talking to you immediately. It can give back coding examples of any kind from React.js to Blockchain etc.
 
