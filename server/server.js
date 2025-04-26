@@ -1,46 +1,36 @@
-import OpenAI from "openai";
 import { app } from "./app.js";
 
-const client = new OpenAI({
-	apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
-});
-
 app.get("/", async (req, res) => {
-	res.status(200).send({ message: "Hello from the AI World!" });
+	res.status(200).send({ message: "Hello from Local AI!" });
 });
 
 app.post("/", async (req, res) => {
 	try {
 		const prompt = req.body.prompt;
 
-		if (!prompt) {
-			return res.status(400).send({ error: "Prompt is required" });
+		if (!prompt || typeof prompt !== "string") {
+			return res.status(400).json({ error: "Prompt is required" });
 		}
 
-		const response = await client.chat.completions.create({
-			model: "gpt-3.5-turbo",
-			messages: [{ role: "user", content: prompt }],
-			temperature: 0,
-			max_tokens: 3000,
-			top_p: 1,
-			presence_penalty: 0,
+		const ollamaRes = await axios.post("http://localhost:11434/api/generate", {
+			model: "phi3", // or "llama3", depending on what you've pulled
+			prompt,
+			stream: false,
 		});
-		
-		if (!response || !response.choices || response.choices.length === 0) {
-			return res.status(500).send({ error: "No response from OpenAI" });
-		}
-		if (!response.choices[0].message || !response.choices[0].message.content) {
-			return res.status(500).send({ error: "No content in OpenAI response" });
+
+		const text = ollamaRes.data?.response?.trim();
+
+		if (!text) {
+			return res.status(500).json({ error: "No response from model" });
 		}
 
-
-		res.status(200).send({ bot: response.choices[0].message.content });
+		res.status(200).json({ bot: text });
 	} catch (error) {
-		console.error("OpenAI error:", error);
-		res.status(500).send({ error: error.message });
+		console.error("Ollama error:", err.message);
+		res.status(500).json({ error: "Failed to generate response" });
 	}
 });
 
 app.listen(3600, () => {
-	console.log("Service is running on port http://localhost:3600");
+	console.log("🚀 Local AI Server running at http://localhost:3600");
 });

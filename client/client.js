@@ -76,7 +76,7 @@ const handleSubmit = async (e) => {
 
 	loader(messageDiv);
 
-	const response = await fetch("https://chat-gpt-open-ai-app.vercel.app", {
+	const response = await fetch("http://localhost:3600", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
