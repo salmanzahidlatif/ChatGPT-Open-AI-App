@@ -1,3 +1,4 @@
+import axios from "axios";
 import { app } from "./app.js";
 
 app.get("/", async (req, res) => {
@@ -13,10 +14,12 @@ app.post("/", async (req, res) => {
 		}
 
 		const ollamaRes = await axios.post("http://localhost:11434/api/generate", {
-			model: "phi3", // or "llama3", depending on what you've pulled
+			model: "phi3", // or "llama3" based on what you have
 			prompt,
 			stream: false,
 		});
+
+		console.log("Ollama response:", ollamaRes);
 
 		const text = ollamaRes.data?.response?.trim();
 
@@ -26,7 +29,7 @@ app.post("/", async (req, res) => {
 
 		res.status(200).json({ bot: text });
 	} catch (error) {
-		console.error("Ollama error:", err.message);
+		console.error("Ollama error:", error.message);
 		res.status(500).json({ error: "Failed to generate response" });
 	}
 });
