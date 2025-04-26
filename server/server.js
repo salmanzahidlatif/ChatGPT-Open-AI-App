@@ -13,19 +13,34 @@ app.post("/", async (req, res) => {
 	try {
 		const prompt = req.body.prompt;
 
-		const response = await client.responses.create({
-			model: "gpt-4o",
-			instructions: 'You are a coding assistant that talks like a pirate',
-			input: prompt,
-		});
+		if (!prompt) {
+			return res.status(400).send({ error: "Prompt is required" });
+		}
 
-		res.status(200).send({ bot: response.output_text });
+		const response = await client.chat.completions.create({
+			model: "gpt-3.5-turbo",
+			messages: [{ role: "user", content: prompt }],
+			temperature: 0,
+			max_tokens: 3000,
+			top_p: 1,
+			presence_penalty: 0,
+		});
+		
+		if (!response || !response.choices || response.choices.length === 0) {
+			return res.status(500).send({ error: "No response from OpenAI" });
+		}
+		if (!response.choices[0].message || !response.choices[0].message.content) {
+			return res.status(500).send({ error: "No content in OpenAI response" });
+		}
+
+
+		res.status(200).send({ bot: response.choices[0].message.content });
 	} catch (error) {
 		console.error("OpenAI error:", error);
 		res.status(500).send({ error: error.message });
 	}
 });
 
-app.listen(5000, () => {
-	console.log("Service is running on port http://localhost:5000");
+app.listen(3600, () => {
+	console.log("Service is running on port http://localhost:3600");
 });
