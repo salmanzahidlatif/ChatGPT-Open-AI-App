@@ -19,8 +19,6 @@ app.post("/", async (req, res) => {
 			stream: false,
 		});
 
-		console.log("Ollama response:", ollamaRes);
-
 		const text = ollamaRes.data?.response?.trim();
 
 		if (!text) {
