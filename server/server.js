@@ -1,7 +1,9 @@
 import OpenAI from "openai";
 import { app } from "./app.js";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const client = new OpenAI({
+	apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
+});
 
 app.get("/", async (req, res) => {
 	res.status(200).send({ message: "Hello from the AI World!" });
@@ -11,17 +13,13 @@ app.post("/", async (req, res) => {
 	try {
 		const prompt = req.body.prompt;
 
-		const response = await openai.completions.create({
-			model: "text-davinci-003",
-			prompt,
-			temperature: 0,
-			max_tokens: 3000,
-			top_p: 1,
-			frequency_penalty: 0.5,
-			presence_penalty: 0,
+		const response = await client.responses.create({
+			model: "gpt-4o",
+			instructions: 'You are a coding assistant that talks like a pirate',
+			input: prompt,
 		});
 
-		res.status(200).send({ bot: response.choices[0]?.text });
+		res.status(200).send({ bot: response.output_text });
 	} catch (error) {
 		console.error("OpenAI error:", error);
 		res.status(500).send({ error: error.message });
