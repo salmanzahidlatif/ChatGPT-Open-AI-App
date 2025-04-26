@@ -1,26 +1,19 @@
-import { Configuration, OpenAIApi } from "openai";
-
+import OpenAI from "openai";
 import { app } from "./app.js";
 
-const configuration = new Configuration({
-	apiKey: process.env.OPENAI_API_KEY,
-});
-
-const openai = new OpenAIApi(configuration);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.get("/", async (req, res) => {
-	res.status(200).send({
-		message: "Hello from the AI World!",
-	});
+	res.status(200).send({ message: "Hello from the AI World!" });
 });
 
 app.post("/", async (req, res) => {
 	try {
 		const prompt = req.body.prompt;
 
-		const response = await openai.createCompletion({
+		const response = await openai.completions.create({
 			model: "text-davinci-003",
-			prompt: `${prompt}`,
+			prompt,
 			temperature: 0,
 			max_tokens: 3000,
 			top_p: 1,
@@ -28,15 +21,10 @@ app.post("/", async (req, res) => {
 			presence_penalty: 0,
 		});
 
-		res.status(200).send({
-			bot: response.data.choices[0].text,
-		});
+		res.status(200).send({ bot: response.choices[0]?.text });
 	} catch (error) {
-		console.error(error);
-
-		res.status(500).send({
-			error,
-		});
+		console.error("OpenAI error:", error);
+		res.status(500).send({ error: error.message });
 	}
 });
 
